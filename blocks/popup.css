@@ -3,12 +3,12 @@
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.5);
-  position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
   display: none;
+  z-index: 100;
 }
 
 .popup__button {
@@ -119,7 +119,7 @@
 
 @media screen and (max-width: 544px) {
   .popup {
-    bottom: 112px;
+    bottom: 0;
   }
 
   .popup__button {
