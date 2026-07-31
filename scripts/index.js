@@ -1,3 +1,30 @@
+const initialCards = [
+  {
+    name: "Valle de Yosemite",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_yosemite.jpg",
+  },
+  {
+    name: "Lago Louise",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lake-louise.jpg",
+  },
+  {
+    name: "Montañas Calvas",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_bald-mountains.jpg",
+  },
+  {
+    name: "Latemar",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_latemar.jpg",
+  },
+  {
+    name: "Parque Nacional de la Vanoise",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_vanoise.jpg",
+  },
+  {
+    name: "Lago di Braies",
+    link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lago.jpg",
+  },
+];
+
 const profileName = document.querySelector(".profile__title");
 const profileDescription = document.querySelector(".profile__description");
 const editProfileButton = document.querySelector(".profile__edit-button");
@@ -22,6 +49,10 @@ const popupImage = imagePopup.querySelector(".popup__image");
 const popupCaption = imagePopup.querySelector(".popup__caption");
 
 const cardsList = document.querySelector(".cards__list");
+
+const cardTemplate = document
+  .querySelector("#card-template")
+  .content.querySelector(".card");
 
 function openPopup(popup) {
   popup.classList.add("popup_is-opened");
@@ -63,40 +94,28 @@ addCardButton.addEventListener("click", () => {
   openPopup(newCardPopup);
 });
 
-function createCard(name, link) {
-  const cardElement = document.createElement("li");
-  cardElement.classList.add("card");
+function getCardElement({
+  name = "Sin título",
+  link = "./images/placeholder.jpg",
+} = {}) {
+  const cardElement = cardTemplate.cloneNode(true);
 
-  cardElement.innerHTML = `
-    <img
-      class="card__image"
-      src="${link}"
-      alt="${name}"
-    />
-
-    <button
-      aria-label="Eliminar tarjeta"
-      class="card__delete-button"
-      type="button"
-    ></button>
-
-    <div class="card__description">
-      <h2 class="card__title"></h2>
-
-      <button
-        aria-label="Botón Me gusta"
-        class="card__like-button"
-        type="button"
-      ></button>
-    </div>
-  `;
-
+  const cardImage = cardElement.querySelector(".card__image");
   const cardTitle = cardElement.querySelector(".card__title");
+
+  cardImage.src = link;
+  cardImage.alt = name;
   cardTitle.textContent = name;
 
   addCardListeners(cardElement);
 
   return cardElement;
+}
+
+function renderCard(name, link, container) {
+  const cardElement = getCardElement({ name, link });
+
+  container.prepend(cardElement);
 }
 
 function addCardListeners(cardElement) {
@@ -125,20 +144,14 @@ function addCardListeners(cardElement) {
 newCardForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
-  const cardName = cardNameInput.value;
-  const cardLink = cardLinkInput.value;
+  renderCard(cardNameInput.value, cardLinkInput.value, cardsList);
 
-  const newCard = createCard(cardName, cardLink);
-
-  cardsList.prepend(newCard);
   newCardForm.reset();
   closePopup(newCardPopup);
 });
 
-const initialCards = document.querySelectorAll(".card");
-
-initialCards.forEach((cardElement) => {
-  addCardListeners(cardElement);
+initialCards.forEach((card) => {
+  renderCard(card.name, card.link, cardsList);
 });
 
 const popupCloseButtons = document.querySelectorAll(".popup__close");
