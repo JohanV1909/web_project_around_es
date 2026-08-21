@@ -1,3 +1,5 @@
+import { setEventListeners, resetValidation } from "./validate.js";
+
 const initialCards = [
   {
     name: "Valle de Yosemite",
@@ -62,6 +64,12 @@ function openPopup(popup) {
 function closePopup(popup) {
   popup.classList.remove("popup_is-opened");
   document.removeEventListener("keydown", handleEscapeKey);
+
+  const formElement = popup.querySelector(".popup__form");
+
+  if (formElement) {
+    resetValidation(formElement);
+  }
 }
 
 function handleEscapeKey(event) {
@@ -78,6 +86,8 @@ editProfileButton.addEventListener("click", () => {
   nameInput.value = profileName.textContent;
   descriptionInput.value = profileDescription.textContent;
 
+  resetValidation(editProfileForm);
+
   openPopup(editProfilePopup);
 });
 
@@ -91,6 +101,7 @@ editProfileForm.addEventListener("submit", (event) => {
 });
 
 addCardButton.addEventListener("click", () => {
+  resetValidation(newCardForm);
   openPopup(newCardPopup);
 });
 
@@ -166,9 +177,12 @@ popupCloseButtons.forEach((closeButton) => {
 const popups = document.querySelectorAll(".popup");
 
 popups.forEach((popup) => {
-  popup.addEventListener("mousedown", (event) => {
+  popup.addEventListener("click", (event) => {
     if (event.target === popup) {
       closePopup(popup);
     }
   });
 });
+
+setEventListeners(editProfileForm);
+setEventListeners(newCardForm);
