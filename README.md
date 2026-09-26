@@ -21,7 +21,8 @@ El proyecto también incluye validación de formularios y diferentes formas de c
 
 - HTML5
 - CSS3
-- JavaScript
+- TypeScript
+- Programación Orientada a Objetos (POO)
 - JavaScript modular
 - Metodología BEM
 - Flexbox
@@ -31,7 +32,7 @@ El proyecto también incluye validación de formularios y diferentes formas de c
 
 ## Estructura del proyecto
 
-El proyecto está organizado utilizando la metodología BEM. Los estilos están separados por bloques y la lógica de JavaScript está dividida entre la funcionalidad principal y la validación de formularios.
+El proyecto está organizado utilizando la metodología BEM para los estilos y Programación Orientada a Objetos para la lógica de la aplicación. El código TypeScript está dividido en clases y componentes responsables de las tarjetas, ventanas emergentes, validación de formularios, información del usuario y renderizado de elementos.
 
 ## Autor
 
