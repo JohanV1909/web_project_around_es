@@ -1,18 +1,34 @@
 import { FormValidator } from "./components/FormValidator.js";
-import {
-  defaultFormConfig,
-  initialCards,
-} from "./utils/constants.js";
+import { defaultFormConfig } from "./utils/constants.js";
 import { Card } from "./components/Card.js";
 import type { CardData } from "./components/Card.js";
 import { Section } from "./components/Section.js";
 import { PopupWithImage } from "./components/PopupWithImage.js";
 import { PopupWithForm } from "./components/PopupWithForm.js";
+import { PopupWithConfirmation } from "./components/PopupWithConfirmation.js";
 import { UserInfo } from "./components/UserInfo.js";
+import { Api } from "./components/Api.js";
+import { apiToken } from "./config.local.js";
+
+const apiBaseUrl = "https://around-api.es.tripleten-services.com/v1";
+
+let currentUserId: string = "";
+
+const api = new Api({
+  baseUrl: apiBaseUrl,
+  headers: {
+    authorization: apiToken,
+    "Content-Type": "application/json",
+  },
+});
 
 
 const editProfileButton = document.querySelector(".profile__edit-button");
 const addCardButton = document.querySelector(".profile__add-button");
+
+const avatarButton = document.querySelector<HTMLButtonElement>(
+  ".profile__avatar-button"
+);
 
 const userInfo = new UserInfo({
   nameSelector: ".profile__title",
@@ -21,11 +37,13 @@ const userInfo = new UserInfo({
 
 const editProfilePopup = new PopupWithForm(
   "#edit-popup",
-  (inputValues) => {
-    userInfo.setUserInfo({
+  async (inputValues): Promise<void> => {
+    const userData = await api.updateUserInfo({
       name: inputValues.name,
       about: inputValues.description,
     });
+
+    userInfo.setUserInfo(userData);
   }
 );
 
@@ -46,12 +64,33 @@ const descriptionInput =
 
 const newCardPopup = new PopupWithForm(
   "#new-card-popup",
-  (inputValues) => {
-    renderCard(inputValues["place-name"], inputValues.link);
+  async (inputValues): Promise<void> => {
+    const cardData = await api.addCard({
+      name: inputValues["place-name"],
+      link: inputValues.link,
+    });
+
+    renderCard(cardData);
   }
 );
 
 newCardPopup.setEventListeners();
+
+const avatarPopup = new PopupWithForm(
+  "#avatar-popup",
+  async (inputValues): Promise<void> => {
+    const userData = await api.updateAvatar(inputValues.avatar);
+
+    const avatarImage =
+      document.querySelector<HTMLImageElement>(".profile__image");
+
+    if (avatarImage) {
+      avatarImage.src = userData.avatar;
+    }
+  }
+);
+
+avatarPopup.setEventListeners();
 
 const newCardForm =
   document.querySelector<HTMLFormElement>("#new-card-form");
@@ -70,16 +109,18 @@ const newCardValidator = new FormValidator(defaultFormConfig, newCardForm);
 const imagePopup = new PopupWithImage("#image-popup");
 imagePopup.setEventListeners();
 
+const confirmationPopup = new PopupWithConfirmation("#delete-popup");
+confirmationPopup.setEventListeners();
+
 const cardSection = new Section<CardData>(
   {
-    items: initialCards,
+    items: [],
     renderer: (item) => {
-      renderCard(item.name, item.link);
+    renderCard(item);
     },
   },
   ".cards__list"
 );
-
 
 editProfileButton?.addEventListener("click", () => {
   const currentUserInfo = userInfo.getUserInfo();
@@ -99,18 +140,64 @@ addCardButton?.addEventListener("click", () => {
   newCardPopup.open();
 });
 
-function renderCard(name: string, link: string): void {
-  const card = new Card({ name, link }, "#card-template", (name, link) => {
-    imagePopup.open(name, link);
-  });
+avatarButton?.addEventListener("click", () => {
+  avatarPopup.open();
+});
+
+function renderCard(data: CardData): void {
+  const card = new Card(
+    data,
+      currentUserId,
+    "#card-template",
+    (name, link) => {
+      imagePopup.open(name, link);
+    },
+   async (cardId) => {
+ confirmationPopup.setSubmitAction(async () => {
+  await api.deleteCard(cardId);
+  card.removeCard();
+  confirmationPopup.close();
+});
+
+  confirmationPopup.open();
+},
+    async (cardId, isLiked) => {
+      if (isLiked) {
+        return await api.unlikeCard(cardId);
+      } else {
+        return await api.likeCard(cardId);
+      }
+    }
+  );
 
   const cardElement = card.generateCard();
   cardSection.addItem(cardElement);
 }
-
 
 cardSection.renderItems();
 
 
 editProfileValidator.enableValidation();
 newCardValidator.enableValidation();
+
+
+async function loadInitialData(): Promise<void> {
+  try {
+    const [userData, cardsData] = await Promise.all([
+      api.getUserInfo(),
+      api.getInitialCards(),
+    ]);
+
+    currentUserId = userData._id;
+
+  userInfo.setUserInfo(userData);
+cardSection.clear();
+cardsData.forEach((card) => {
+  renderCard(card);
+});
+  } catch (err) {
+    console.error("Error al cargar los datos iniciales:", err);
+  }
+}
+
+loadInitialData();

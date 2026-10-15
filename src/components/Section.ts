@@ -28,4 +28,10 @@ public addItem(element: HTMLElement): void {
   this.container.append(element);
 }
 
+public clear(): void {
+  this.container.querySelectorAll(".card").forEach((card) => {
+    card.remove();
+  });
+}
+
 }

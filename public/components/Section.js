@@ -16,4 +16,9 @@ export class Section {
     addItem(element) {
         this.container.append(element);
     }
+    clear() {
+        this.container.querySelectorAll(".card").forEach((card) => {
+            card.remove();
+        });
+    }
 }

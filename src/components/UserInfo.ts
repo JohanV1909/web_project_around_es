@@ -1,6 +1,13 @@
+export interface UserFormData {
+  name: string;
+  about: string;
+}
+
 export interface UserData {
   name: string;
   about: string;
+  avatar: string;
+  _id: string;
 }
 
 interface UserInfoSelectors {
@@ -32,7 +39,7 @@ export class UserInfo {
   this.aboutElement = aboutElement;
 }
 
-public getUserInfo(): UserData {
+public getUserInfo(): UserFormData {
   return {
     name: this.nameElement.textContent || "",
     about: this.aboutElement.textContent || "",
@@ -43,5 +50,12 @@ public getUserInfo(): UserData {
 public setUserInfo(data: UserData): void {
   this.nameElement.textContent = data.name;
   this.aboutElement.textContent = data.about;
+
+  const avatarImage =
+    document.querySelector<HTMLImageElement>(".profile__image");
+
+  if (avatarImage) {
+    avatarImage.src = data.avatar;
+  }
 }
 }

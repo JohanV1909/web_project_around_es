@@ -20,5 +20,9 @@ export class UserInfo {
     setUserInfo(data) {
         this.nameElement.textContent = data.name;
         this.aboutElement.textContent = data.about;
+        const avatarImage = document.querySelector(".profile__image");
+        if (avatarImage) {
+            avatarImage.src = data.avatar;
+        }
     }
 }

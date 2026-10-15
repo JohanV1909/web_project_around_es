@@ -1,5 +1,5 @@
 import type { FormConfig } from "../components/FormValidator.js";
-import type { CardData } from "../components/Card.js";
+import type { CardFormData } from "../components/Card.js";
 
 export const defaultFormConfig: FormConfig = {
   inputSelector: ".popup__input",
@@ -9,7 +9,7 @@ export const defaultFormConfig: FormConfig = {
   errorClass: "popup__input-error_active",
 };
 
-export const initialCards: CardData[] = [
+export const initialCards: CardFormData[] = [
   {
     name: "Valle de Yosemite",
     link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_yosemite.jpg",
