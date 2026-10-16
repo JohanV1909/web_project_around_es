@@ -99,12 +99,21 @@ if (!newCardForm) {
   throw new Error("No se encontró el formulario de nueva tarjeta");
 }
 
+const avatarForm =
+  document.querySelector<HTMLFormElement>("#avatar-form");
+
+if (!avatarForm) {
+  throw new Error("No se encontró el formulario de editar avatar");
+}
+
 const editProfileValidator = new FormValidator(
   defaultFormConfig,
   editProfileForm,
 );
 
 const newCardValidator = new FormValidator(defaultFormConfig, newCardForm);
+
+const avatarValidator = new FormValidator(defaultFormConfig, avatarForm);
 
 const imagePopup = new PopupWithImage("#image-popup");
 imagePopup.setEventListeners();
@@ -141,6 +150,7 @@ addCardButton?.addEventListener("click", () => {
 });
 
 avatarButton?.addEventListener("click", () => {
+  avatarValidator.resetValidation();
   avatarPopup.open();
 });
 
@@ -179,6 +189,7 @@ cardSection.renderItems();
 
 editProfileValidator.enableValidation();
 newCardValidator.enableValidation();
+avatarValidator.enableValidation();
 
 
 async function loadInitialData(): Promise<void> {

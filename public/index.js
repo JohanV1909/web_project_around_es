@@ -67,8 +67,13 @@ const newCardForm = document.querySelector("#new-card-form");
 if (!newCardForm) {
     throw new Error("No se encontró el formulario de nueva tarjeta");
 }
+const avatarForm = document.querySelector("#avatar-form");
+if (!avatarForm) {
+    throw new Error("No se encontró el formulario de editar avatar");
+}
 const editProfileValidator = new FormValidator(defaultFormConfig, editProfileForm);
 const newCardValidator = new FormValidator(defaultFormConfig, newCardForm);
+const avatarValidator = new FormValidator(defaultFormConfig, avatarForm);
 const imagePopup = new PopupWithImage("#image-popup");
 imagePopup.setEventListeners();
 const confirmationPopup = new PopupWithConfirmation("#delete-popup");
@@ -93,6 +98,7 @@ addCardButton === null || addCardButton === void 0 ? void 0 : addCardButton.addE
     newCardPopup.open();
 });
 avatarButton === null || avatarButton === void 0 ? void 0 : avatarButton.addEventListener("click", () => {
+    avatarValidator.resetValidation();
     avatarPopup.open();
 });
 function renderCard(data) {
@@ -119,6 +125,7 @@ function renderCard(data) {
 cardSection.renderItems();
 editProfileValidator.enableValidation();
 newCardValidator.enableValidation();
+avatarValidator.enableValidation();
 function loadInitialData() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
